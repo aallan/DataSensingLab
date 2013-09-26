@@ -1,3 +1,14 @@
+// to purchase a sensor mote, go to: http://kippkitts.gostorego.com/sensor-mote-aq.html
+
+/* by default, this sketch builds for the XBee; if you want to build for TSRP over ethernet, look for
+
+     #undef TSRP
+
+   and change it to
+
+     #define TSRP
+
+ */
 
 #include <Wire.h>
 #include <EEPROM.h>
@@ -16,10 +27,47 @@ Adafruit_BMP085 bmp;
 #define SILENT_VALUE 380     // Starting neutral microphone value (self-correcting)
 #define BMP085_DEBUG 1
 
+#undef  TSRP
+
+#ifdef  TSRP
+#include <Dhcp.h>
+#include <Dns.h>
+#include <Ethernet.h>
+#include <EthernetClient.h>
+#include <EthernetServer.h>
+#include <EthernetUdp.h>
+#include <util.h>
+#include <SPI.h>
+
+// The MAC address of your Ethernet board (or Ethernet Shield) is located on the back of the circuit board.
+byte mac[] = { 0x90, 0xA2, 0xDA, 0x0E, 0x9C, 0x1B };  // Arduino Ethernet
+
+int requestID = 1;
+
+PROGMEM prog_char *loopPacket1 = "{\"path\":\"/api/v1/thing/reporting\",\"requestID\":\"";
+PROGMEM prog_char *loopPacket2 = "\",\"things\":{\"/device/climate/datasensinglab/air-quality\":{\"prototype\":{\"device\":{\"name\":\"Sensor Mote Air Quality\",\"maker\":\"Data Sensing Lab\"},\"name\":\"true\",\"status\":[\"present\",\"absent\",\"recent\"],\"properties\":{\"airQuality\":\"sigmas\",\"temperature\":\"celsius\",\"humidity\":\"percentage\",\"light\":\"lux\",\"altitude\":\"meters\",\"pressure\":\"millibars\"}},\"instances\":[{\"name\":\"Air Quality Sensor Mote\",\"status\":\"present\",\"unit\":{\"serial\":\"";
+PROGMEM prog_char *loopPacket3 = "\",\"udn\":\"195a42b0-ef6b-11e2-99d0-";
+PROGMEM prog_char *loopPacket4 = "-air-quality\"},\"info\":{\"airQuality\":";
+PROGMEM prog_char *loopPacket5 = ",\"temperature\":";
+PROGMEM prog_char *loopPacket6 = ",\"humidity\":";
+PROGMEM prog_char *loopPacket7 = ",\"light\":";
+PROGMEM prog_char *loopPacket8 = ",\"altitude\":";
+PROGMEM prog_char *loopPacket9 = ",\"pressure\":";
+PROGMEM prog_char *loopPacket10= "},\"uptime\":";
+PROGMEM prog_char *loopPacket11= "}]}}}";
+
+// All TSRP transmissions are via UDP to port 22601 on multicast address '224.192.32.19'.
+EthernetUDP udp;
+IPAddress ip(224,192,32,19);
+unsigned int port = 22601;
+#endif
+
 // Pins
 //
+#ifndef TSRP
 // 0         RX (from XBee)
 // 1         TX (to XBee)
+#endif
 
 // 4         Shutdown for LT5334 RF Sensor (do not use)
 const int rfShutdown = 4;
@@ -103,7 +151,9 @@ int hasMat = 0;
 
 void setup() {
   Serial.begin(9600);
+#ifndef TSRP
   Serial1.begin(9600);  // to XBee
+#endif
   
   // while the serial stream is not open, do nothing.
   //
@@ -185,6 +235,31 @@ void setup() {
   }
   digitalWrite(loop_led, LOW);
   
+#ifdef  TSRP
+
+  Serial.println("Waiting for DHCP address.");
+  if (Ethernet.begin(mac) == 0) {
+    Serial.println("Error: Failed to configure Ethernet using DHCP");
+    while(1) {  }
+  }
+
+  Serial.print("MAC address: ");
+  for (byte thisByte = 0; thisByte < 6; thisByte++) {
+    if (mac[thisByte] < 0x0a) Serial.print("0");
+    Serial.print(mac[thisByte], HEX);
+    Serial.print(":");
+  }
+  Serial.println();
+
+  Serial.print("IP address: ");
+  for (byte thisByte = 0; thisByte < 4; thisByte++) {
+    Serial.print(Ethernet.localIP()[thisByte], DEC);
+    Serial.print(".");
+  }
+  Serial.println();
+
+  udp.beginMulti(ip,port);
+#endif
 }
 
 // LOOP ------------------------------------------------------------------------------------------------------
@@ -306,6 +381,7 @@ void getSample() {
     
   }
   
+#ifndef TSRP
   if ( hasGas ) {
      Serial1.print("idigi_data:names=temperature,pressure,humidity,light,altitude,mic,gas&values=");
   } else if ( hasRF ) {
@@ -343,6 +419,56 @@ void getSample() {
   } else {
      Serial1.println("&units=C,Pa,%,Lux,m,X");
   }
+#else
+  char  buffer[24];
+  char packetBuffer[768];
+  unsigned long now = millis();
+
+  strcpy(packetBuffer,(char*)pgm_read_word(&loopPacket1) );
+  strcat(packetBuffer, ultoa( requestID, buffer, 10) );
+
+  strcat(packetBuffer,(char*)pgm_read_word(&loopPacket2) );
+  for (byte thisByte = 0; thisByte < 6; thisByte++) {
+      sprintf(buffer, "%02x", mac[thisByte] );
+      strcat(packetBuffer, buffer);
+  }
+
+  strcat(packetBuffer,(char*)pgm_read_word(&loopPacket3) );
+  for (byte thisByte = 0; thisByte < 6; thisByte++) {
+      sprintf(buffer, "%02x", mac[thisByte] );
+      strcat(packetBuffer, buffer);
+  }
+
+  strcat(packetBuffer,(char*)pgm_read_word(&loopPacket4) );
+  strcat(packetBuffer, dtostrf(gasValue, 12, 4, buffer));
+
+  strcat(packetBuffer,(char*)pgm_read_word(&loopPacket5) );
+  strcat(packetBuffer, dtostrf(temperature, 12, 4, buffer));
+
+  strcat(packetBuffer,(char*)pgm_read_word(&loopPacket6) );
+  strcat(packetBuffer, dtostrf(relative_humid, 12, 4, buffer));
+
+  strcat(packetBuffer,(char*)pgm_read_word(&loopPacket7) );
+  strcat(packetBuffer, dtostrf(light, 12, 4, buffer));
+
+  strcat(packetBuffer,(char*)pgm_read_word(&loopPacket8) );
+  strcat(packetBuffer, dtostrf(altitude, 12, 4, buffer));
+
+  strcat(packetBuffer,(char*)pgm_read_word(&loopPacket9) );
+  strcat(packetBuffer, dtostrf(pressure * 0.01, 12, 4, buffer));
+
+  strcat(packetBuffer,(char*)pgm_read_word(&loopPacket10) );
+  strcat(packetBuffer, ultoa( now, buffer, 10) );
+
+  strcat(packetBuffer,(char*)pgm_read_word(&loopPacket11) );
+
+  Serial.println(packetBuffer);
+
+  udp.beginPacket(udp.remoteIP(), udp.remotePort());
+  udp.write(packetBuffer);
+  udp.endPacket();
+  requestID = requestID + 1;
+#endif
 
   digitalWrite(loop_led, LOW);
   sinceLast = 0;
@@ -354,6 +480,7 @@ void getSample() {
 // Checks for configuration updates over the XBee network
 
 void checkForInput() {
+#ifndef TSRP
   //Serial.println( "Checking for Input from Mesh Network" );
   /*
   Send the following type of command as a POST from iDigi to set the sampling time:
@@ -391,6 +518,7 @@ void checkForInput() {
       } 
     }
   }
+#endif
 }
 
 // GET SOUND ------------------------------------------------------------------------------------------------------
