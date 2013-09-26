@@ -8,3 +8,6 @@ DSLWorkshop/
     Code for the Arduino Shield PCB distributed as part of the DSL Workshop
     kit, and associated with the "Distributed Network Data" book by Alasdair Allan
     and Kipp Bradford.
+
+StrataNY2012/
+    Code for the boards used at the Strata conference in New York in 2012.
