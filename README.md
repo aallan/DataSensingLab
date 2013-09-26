@@ -1,11 +1,15 @@
 DataSensingLab
 ==============
 
+This repository contains code and hardware designs for several different boards associated with the [Data Sensing Lab](http://datasensinglab.com) project.
+
+##Google I/O
+
 ![Sensor Motes](Images/SensorMotes.jpg)
 
-Here you can find the code and hardware designs for the sensor motes used by the [Data Sensing Lab](http://datasensinglab.com) at Google I/O in 2013. Details of the previous generation of motes, used at the O'Reilly Strata conferences have their [own repository](https://github.com/aallan/SensorMote).
+Here you can find the code and hardware designs for the sensor motes used by the [Data Sensing Lab](http://datasensinglab.com) at Google I/O in 2013. Details of the previous generation of motes, used at the O'Reilly Strata conferences have their [own repository](https://github.com/aallan/SensorMote). You can now [buy these boards](http://datasensinglab.com/dslstore/) at the Lab Store.
 
-You can now [buy these boards](http://datasensinglab.com/dslstore/) at the Lab Store.
+##Data Sensing Lab Workshops
 
 ![DSL Workshop](Images/DSLWorkshop.jpg)
 
