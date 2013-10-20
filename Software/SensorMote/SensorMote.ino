@@ -27,7 +27,7 @@ Adafruit_BMP085 bmp;
 #define SILENT_VALUE 380     // Starting neutral microphone value (self-correcting)
 #define BMP085_DEBUG 1
 
-#undef  TSRP
+#define TSRP
 
 #ifdef  TSRP
 #include <Dhcp.h>
@@ -40,7 +40,7 @@ Adafruit_BMP085 bmp;
 #include <SPI.h>
 
 // The MAC address of your Ethernet board (or Ethernet Shield) is located on the back of the circuit board.
-byte mac[] = { 0x90, 0xA2, 0xDA, 0x0E, 0x9C, 0x1B };  // Arduino Ethernet
+byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFF, 0x07 };  // Arduino Ethernet
 
 int requestID = 1;
 
@@ -56,9 +56,9 @@ PROGMEM prog_char *loopPacket9 = ",\"pressure\":";
 PROGMEM prog_char *loopPacket10= "},\"uptime\":";
 PROGMEM prog_char *loopPacket11= "}]}}}";
 
-// All TSRP transmissions are via UDP to port 22601 on multicast address '224.192.32.19'.
+// All TSRP transmissions are via UDP to port 22601 on multicast address '224.192.32.20'.
 EthernetUDP udp;
-IPAddress ip(224,192,32,19);
+IPAddress ip(224,192,32,20);
 unsigned int port = 22601;
 #endif
 
@@ -159,7 +159,7 @@ void setup() {
   //
   // WARNING: Needs to be removed for production release!!!
   //while (!Serial) ;
-  Serial.println("Initializing...");
+  Serial.println("\nInitializing...");
 
   Serial.print("SensorMote (Google I/O) v");
   Serial.println(CODE_VERSION);
@@ -440,7 +440,7 @@ void getSample() {
   }
 
   strcat(packetBuffer,(char*)pgm_read_word(&loopPacket4) );
-  strcat(packetBuffer, dtostrf(gasValue, 12, 4, buffer));
+  strcat(packetBuffer, ltoa((long int) gasValue, buffer, 10));
 
   strcat(packetBuffer,(char*)pgm_read_word(&loopPacket5) );
   strcat(packetBuffer, dtostrf(temperature, 12, 4, buffer));
