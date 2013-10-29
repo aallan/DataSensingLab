@@ -31,6 +31,6 @@ Before you can open the [Fritzing](http://fritzing.org/) (.fzz) file—depending
 
 ##Enclosures
 
-![Enclosure](Images/Enclosure.png)
+![Enclosure](Images/Enclosures.png)
 
 To 3D-print your own enclosures for the sensor motes, you can download the STL files designed by Brian Jepson of Maker Media.
