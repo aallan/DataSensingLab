@@ -19,7 +19,7 @@ The code and hardware designs for the Data Sensing Lab Arduino Shield, used as p
 
 ![DSL Book](Images/DistributedNetworkData.jpg)
 
-You can also find the code and hardware design files for the shield board associated with the "[Distributed Network Data](http://www.anrdoezrs.net/click-6760607-11260198?url=http%3A%2F%2Fshop.oreilly.com%2Fproduct%2F0636920028802.do%3Fcmp%3Daf-strata-book-product_cj_9781449360269_%25zp&cjsku=0636920028802)" book written by Data Sensing Lab fellows Alasdair Allan and Kipp Bradford.
+The code and hardware designs for the for the shield board associated with the "[Distributed Network Data](http://www.anrdoezrs.net/click-6760607-11260198?url=http%3A%2F%2Fshop.oreilly.com%2Fproduct%2F0636920028802.do%3Fcmp%3Daf-strata-book-product_cj_9781449360269_%25zp&cjsku=0636920028802)" book written by Data Sensing Lab fellows Alasdair Allan and Kipp Bradford.
 
 ##Strata CA, 2013
 
