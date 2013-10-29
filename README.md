@@ -23,7 +23,7 @@ You can also find the code and hardware design files for the shield board associ
 
 ##Strata CA, 2013
 
-![Sensor Mote](StrataCA.jpg)
+![Sensor Mote](Images/StrataCA.jpg)
 
 The Sensor Mote from Strata Conference in California in 2013
 
