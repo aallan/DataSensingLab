@@ -15,3 +15,6 @@ DSLWorkshop/
 
 StrataNY2012/
     Code for the boards used at the Strata conference in New York in 2012.
+
+StrataCA2013/
+    Code for the boards introduced at the Strata conference in New York in 2012.

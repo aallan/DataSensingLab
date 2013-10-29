@@ -13,3 +13,6 @@ DSLWorkshop/
 
 StrataNY2012/
     Fritzing file for the boards used at Strata New York in 2012.
+
+StrataCA2013/
+    Fritizing file for the boards introduced at Strata CA in 2013.
