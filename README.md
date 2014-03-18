@@ -1,5 +1,4 @@
-DataSensingLab
-==============
+![DSL Workshop](Images/Logo.jpg)
 
 This repository contains code and hardware designs for several different boards associated with the [Data Sensing Lab](http://datasensinglab.com) project.
 
